@@ -1,4 +1,4 @@
-def get_co_ords(position, instruction):
+def get_points(position, instruction):
     # Get a list of the points of the positions
     # The wire has passed through, starting at the input position
     # given the Right/Left/Up/Down instruction
@@ -18,8 +18,6 @@ def get_co_ords(position, instruction):
     return points
 
 def get_wire_states(initial_state, instruction):
-    # wire_state is the point and the distance travelled to reach that point:
-    # (x,y, distance)
     wire_states = []
     direction = instruction[0]
 
@@ -36,15 +34,19 @@ def get_wire_states(initial_state, instruction):
 
     return wire_states
 
-def get_shortest_for_common_points(wire_states_1, wire_states_2):
+def get_shortest_for_common_points(wire_1_states, wire_2_states):
     distances = []
-    wire_1_points = list(map(lambda x: (x[0],x[1]), wire_states_1))
-    wire_2_points = list(map(lambda x: (x[0],x[1]), wire_states_2))
+    # Get a list of just the points from the wire states
+    wire_1_points = list(map(lambda x: (x[0],x[1]), wire_1_states))
+    wire_2_points = list(map(lambda x: (x[0],x[1]), wire_2_states))
+    # Get a set of the common points (points where the wires cross)
     common_points = (set(wire_1_points) & set(wire_2_points))
     for common_point in common_points:
-        # Get the first time each wire entered the location where they cross
-        wire_cross_state_1 = wire_states_1[wire_1_points.index(common_point)]
-        wire_cross_state_2 = wire_states_2[wire_2_points.index(common_point)]
+        # Get the state at the first point
+        # Look up the index of the point in the list of points, then
+        # pull the state from this same index in the list of states.
+        wire_cross_state_1 = wire_1_states[wire_1_points.index(common_point)]
+        wire_cross_state_2 = wire_2_states[wire_2_points.index(common_point)]
         distances.append(wire_cross_state_1[2] + wire_cross_state_2[2])
 
     distances.sort()
@@ -55,13 +57,16 @@ def process_wire(wire):
     # Start at (0,0)
     points = [(0,0)]
     for instruction in wire:
-        # Start at the last co-ordinate
+        # Start at the last point
         position = points[-1]
-        points = points + get_co_ords(position, instruction)
+        points = points + get_points(position, instruction)
 
     return points
 
 def get_all_wire_states(wire):
+    # Build a list of all the states the wire makes
+    # A 'wire state' is the point and the distance travelled to reach that point:
+    # (x,y, distance)
     wire_states = [(0,0,0)]
     for instruction in wire:
         # Start at last state
@@ -90,22 +95,22 @@ def solve_problem1(wire1, wire2):
 def solve_problem2(wire1, wire2):
     # Given two wires what is the fewest combined steps the
     # wires take to reach an intersection?
-    distances = []
-    wire_states_1 = get_all_wire_states(wire1)
-    wire_states_2 = get_all_wire_states(wire2)
-    wire_1_points = list(map(lambda x: (x[0],x[1]), wire_states_1))
-    wire_2_points = list(map(lambda x: (x[0],x[1]), wire_states_2))
+    steps_to_reach_intersection = []
+    wire_1_states = get_all_wire_states(wire1)
+    wire_2_states = get_all_wire_states(wire2)
+    wire_1_points = list(map(lambda x: (x[0],x[1]), wire_1_states))
+    wire_2_points = list(map(lambda x: (x[0],x[1]), wire_2_states))
     common_points = (set(wire_1_points) & set(wire_2_points))
     for common_point in common_points:
         # Get the first time each wire entered the location where they cross
-        wire_cross_state_1 = wire_states_1[wire_1_points.index(common_point)]
-        wire_cross_state_2 = wire_states_2[wire_2_points.index(common_point)]
-        distances.append(wire_cross_state_1[2] + wire_cross_state_2[2])
+        wire_cross_state_1 = wire_1_states[wire_1_points.index(common_point)]
+        wire_cross_state_2 = wire_2_states[wire_2_points.index(common_point)]
+        # Combine the number of steps in each state
+        steps_to_reach_intersection.append(wire_cross_state_1[2] + wire_cross_state_2[2])
 
-    distances.sort()
+    steps_to_reach_intersection.sort()
     # return the shortest distance (except for where the wires cross at the origin)
-    return distances[1]
-    #print(get_shortest_for_common_points(get_all_wire_states(wire1), get_all_wire_states(wire2)))
+    return steps_to_reach_intersection[1]
 
 # Test input
 wire1 = ['R75','D30','R83','U83','L12','D49','R71','U7','L72']
