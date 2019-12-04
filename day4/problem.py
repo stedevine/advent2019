@@ -1,44 +1,51 @@
 import math
 
+def get_digits(candidate):
+    digits = []
+    for i in range (6, 0, -1):
+        digits.append(int(candidate % math.pow(10, i) / math.pow(10, i-1)))
+    return digits
+
 # Check each digit from left to right and check that they don't decrease
 def digits_dont_decrease(candidate):
     # It's a six digit number and cannot start with 0
-    last_value = 0
-    for i in range (6, 0, -1):
-        digit = int(candidate % math.pow(10, i) / math.pow(10, i-1))
-        if (digit < last_value):
+    previous_digit = 0
+    for digit in get_digits(candidate):
+        if (digit < previous_digit):
             return False
-        last_value = digit
-
+        previous_digit = digit
     return True
 
 def has_pair(candidate):
-    last_value = 0
-    for i in range (6, 0, -1):
-        digit = int(candidate % math.pow(10, i) / math.pow(10, i-1))
-        if (digit == last_value):
+    previous_digit = 0
+    for digit in get_digits(candidate):
+        if (digit == previous_digit):
             return True
-        last_value = digit
-
+        previous_digit = digit
     return False
 
 # Collect any adjecent digits in a dictionary
-# Note this would count 112311 into {1:4} and return False
+# For the key, start with 0 and increment it every time we see a different value for the digit.
+# (every time a chain of identical numbers is broken).
+# Otherwise we would count 112311 into {1:4} and return False
 # even though there is a valid pair of digits.
 # However, there is an additional criteria in that the digits must not decrease
 # so we will never see that input if we call this in conjuction with digits_dont_decrease
+# (But let's make it correct anyway)
 def has_exact_pair(candidate):
     group = {}
-    last_value = 0
-    for i in range (6, 0, -1):
-        digit = int(candidate % math.pow(10,i) / math.pow(10,i-1))
-        if (digit == last_value):
-            group[digit] = group.get(digit,1) + 1
-        last_value = digit
+    key = 0
+    previous_digit = 0
+    for digit in get_digits(candidate):
+        if (digit == previous_digit):
+            group[key] = group.get(key,1) + 1
+        else:
+            key = key + 1
+        previous_digit = digit
 
-    for key in group:
+    for k in group:
         # exactly a pair
-        if group[key] == 2:
+        if group[k] == 2:
             return True
 
     return False
@@ -65,7 +72,6 @@ print(is_valid(223450))
 print(is_valid(123789))
 print(is_valid(122789))
 
-#
 print(has_exact_pair(123444))
 print(has_exact_pair(112311))
 
