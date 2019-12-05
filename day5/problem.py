@@ -7,32 +7,29 @@ def process_tape(tape, input):
         # The rightmost 2 digits are the opcode
         # We can ignore the leading 0
         op_code = instruction % 100
-        print('position {} opcode {}'.format(position, op_code))
+        #print('position {} opcode {}'.format(position, op_code))
         param_mode_1 = int((instruction % 1000) / 100)
         param_mode_2 = int((instruction % 10000) / 1000)
         param_mode_3 = int((instruction % 100000) / 10000)
-        print('{} {} {}'.format(param_mode_1, param_mode_2, param_mode_3))
+        #print('{} {} {}'.format(param_mode_1, param_mode_2, param_mode_3))
 
-        if op_code == 1:
+        if op_code == 1 or op_code == 2:
             param_1 = tape[tape[position + 1]] if param_mode_1 == 0 else tape[position + 1]
             param_2 = tape[tape[position + 2]] if param_mode_2 == 0 else tape[position + 2]
             output_index = tape[position + 3] if param_mode_3 == 0 else position + 3
-            tape[output_index] = param_1 + param_2
+            if op_code == 1:
+                tape[output_index] = param_1 + param_2
+            elif op_code == 2:
+                tape[output_index] = param_1 * param_2
             position = position + 4
-        elif op_code == 2:
-            param_1 = tape[tape[position + 1]] if param_mode_1 == 0 else tape[position + 1]
-            param_2 = tape[tape[position + 2]] if param_mode_2 == 0 else tape[position + 2]
-            output_index = tape[position + 3] if param_mode_3 == 0 else position + 3
-            tape[output_index] = param_1 * param_2
-            position = position + 4
-        elif op_code == 3:
+
+        elif op_code == 3 or op_code == 4:
             output_index = tape[position + 1] if param_mode_1 == 0 else position + 1
-            tape[output_index] = input
-            position = position + 2
-        elif op_code == 4:
-            output_index = tape[position + 1] if param_mode_1 == 0 else position + 1
-            output = tape[output_index]
-            print('output is {}'.format(output))
+            if op_code == 3:
+                tape[output_index] = input
+            elif op_code == 4:
+                output = tape[output_index]
+                #print('output is {}'.format(output))
             position = position + 2
 
         elif op_code == 99:
