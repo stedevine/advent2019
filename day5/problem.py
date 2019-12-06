@@ -1,6 +1,5 @@
 
 def process_tape(tape, input):
-    output = -999
     position = 0
     while True:
         instruction = tape[position]
