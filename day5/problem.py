@@ -7,13 +7,13 @@ def process_tape(tape, input):
         # The rightmost 2 digits are the opcode
         # We can ignore the leading 0
         op_code = instruction % 100
-        print('position {} opcode {}'.format(position, op_code))
+        # print('position {} opcode {}'.format(position, op_code))
         param_mode_1 = int((instruction % 1000) / 100)
         param_mode_2 = int((instruction % 10000) / 1000)
         param_mode_3 = int((instruction % 100000) / 10000)
         #print('{} {} {}'.format(param_mode_1, param_mode_2, param_mode_3))
 
-        if op_code == 1 or op_code == 2:
+        if op_code in [1,2,7,8]:
             param_1 = tape[tape[position + 1]] if param_mode_1 == 0 else tape[position + 1]
             param_2 = tape[tape[position + 2]] if param_mode_2 == 0 else tape[position + 2]
             param_3 = tape[position + 3] if param_mode_3 == 0 else position + 3
@@ -21,60 +21,32 @@ def process_tape(tape, input):
                 tape[param_3] = param_1 + param_2
             elif op_code == 2:
                 tape[param_3] = param_1 * param_2
+            elif op_code == 7:
+                tape[param_3] = 1 if (param_1 < param_2) else 0
+            elif op_code == 8:
+                tape[param_3] = 1 if (param_1 == param_2) else 0
+
             position = position + 4
 
-        elif op_code == 3 or op_code == 4:
+
+        elif op_code in [3,4]:
             param_1 = tape[position + 1] if param_mode_1 == 0 else position + 1
             if op_code == 3:
                 tape[param_1] = input
             elif op_code == 4:
                 output = tape[param_1]
-                #print('output is {}'.format(output))
             position = position + 2
 
-        elif op_code == 5:
+        elif op_code in [5,6]:
             param_1 = tape[tape[position + 1]] if param_mode_1 == 0 else tape[position + 1]
             param_2 = tape[tape[position + 2]] if param_mode_2 == 0 else tape[position + 2]
-            if param_1 != 0:
-                position = param_2
-            else:
-                position = position + 3
-
-        elif op_code == 6:
-            param_1 = tape[tape[position + 1]] if param_mode_1 == 0 else tape[position + 1]
-            param_2 = tape[tape[position + 2]] if param_mode_2 == 0 else tape[position + 2]
-            if param_1 == 0:
-                position = param_2
-            else:
-                position = position + 3
-
-        elif op_code == 7:
-            param_1 = tape[tape[position + 1]] if param_mode_1 == 0 else tape[position + 1]
-            param_2 = tape[tape[position + 2]] if param_mode_2 == 0 else tape[position + 2]
-            param_3 = tape[position + 3] if param_mode_3 == 0 else position + 3
-            tape[param_3] = 1 if (param_1 < param_2) else 0
-            position = position + 4
-
-        elif op_code == 8:
-            print(tape)
-
-            param_1 = tape[tape[position + 1]] if param_mode_1 == 0 else tape[position + 1]
-            param_2 = tape[tape[position + 2]] if param_mode_2 == 0 else tape[position + 2]
-            param_3 = tape[position + 3] if param_mode_3 == 0 else position + 3
-            print('param_mode_1 {} param_1 {}'.format(param_mode_1, param_1))
-            print('param_mode_2 {} param_2 {}'.format(param_mode_2, param_2))
-            print('param_mode_3 {} param_3 {}'.format(param_mode_3, param_3))
-
-            tape[param_3] = 1 if (param_1 == param_2) else 0
-            print('{}'.format(tape))
-            position = position + 4
-
+            if op_code == 5:
+                position = param_2 if param_1 != 0 else position + 3
+            if op_code == 6:
+                position = param_2 if param_1 == 0 else position + 3
 
         elif op_code == 99:
             return output
-
-        else:
-            return 'error {}'.format(op_code)
 
     return None
 
@@ -83,8 +55,10 @@ tape = [3,225,1,225,6,6,1100,1,238,225,104,0,1102,7,85,225,1102,67,12,225,102,36
 print(process_tape(tape.copy(), 1))
 # Problem 2, input = 5, support more opcodes
 print(process_tape(tape.copy(), 5))
+'''
 test_1 = [3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9]
 test_2 = [3,3,1105,-1,9,1101,0,0,12,4,12,99,1]
 test_3 = [3,9,8,9,10,9,4,9,99,-1,8]
 test_4 = [3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99]
 print(process_tape(test_4, 9))
+'''
