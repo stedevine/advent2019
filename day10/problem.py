@@ -19,15 +19,6 @@ def get_line_of_sight(start_point, end_point):
 
     return path
 
-def get_board(filename):
-    board= []
-    with open(filename) as file:
-        for line in file:
-            row = [c for c in line.strip()]
-            board.append(row)
-
-    return board
-
 def get_asteroids(board):
     asteroids = []
     height = len(board)
@@ -39,13 +30,14 @@ def get_asteroids(board):
 
     return asteroids
 
-def is_visible(path, board):
-    # Check all the positions on the path for asteroids
-    # Not counting the origin or the target
-    for position in path[1:-1]:
-        if board[position[1]][position[0]] == '#':
-            return False
-    return True
+def get_board(filename):
+    board= []
+    with open(filename) as file:
+        for line in file:
+            row = [c for c in line.strip()]
+            board.append(row)
+
+    return board
 
 
 # Given an asteroid (position)
@@ -53,29 +45,30 @@ def is_visible(path, board):
 # Get the line of site
 # If line of site is all . - can see asteroid, otherwise blocked
 
-
-def get_max_number_visible_asteroids(asteroids,board):
+def get_max_number_visible_asteroids(asteroids):
     max_count = 0
     for i in range(0, len(asteroids)):
         source = asteroids[i]
         targets = asteroids.copy()
         del targets[i]
         count = 0
-        for asteroid in targets:
-            line_of_sight = get_line_of_sight(source, asteroid)
-            if (is_visible(line_of_sight, board)):
+        for target in targets:
+            line_of_sight = get_line_of_sight(source, target)
+            if not (set(line_of_sight[1:-1]) & set(asteroids)):
                 count = count + 1
-        #print('# {} count {}'.format(source,count))
         max_count = max(count,max_count)
     return max_count
 
+
+
+
 board = get_board('./test1.txt')
-print(get_max_number_visible_asteroids(get_asteroids(board),board))
+print(get_max_number_visible_asteroids(get_asteroids(board)))
 board = get_board('./test2.txt')
-print(get_max_number_visible_asteroids(get_asteroids(board),board))
+print(get_max_number_visible_asteroids(get_asteroids(board)))
 board = get_board('./test3.txt')
-print(get_max_number_visible_asteroids(get_asteroids(board),board))
+print(get_max_number_visible_asteroids(get_asteroids(board)))
 board = get_board('./test4.txt')
-print(get_max_number_visible_asteroids(get_asteroids(board),board))
+print(get_max_number_visible_asteroids(get_asteroids(board)))
 board = get_board('./input.txt')
-print(get_max_number_visible_asteroids(get_asteroids(board),board))
+print(get_max_number_visible_asteroids(get_asteroids(board)))
