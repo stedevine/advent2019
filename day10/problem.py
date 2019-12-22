@@ -70,28 +70,35 @@ def angle(origin, target):
     # Angle for right triangle is tan^-1(opposite/adjacent)
     # The opposite and adjecent values depend on what quadrant the target is
     # in relative to the origin
-    delta_x = target[0] - origin[0]
-    print(delta_x)
+    delta_x = float(target[0] - origin[0])
     # increasing y moves a point DOWNWARDS
-    delta_y = -(target[1] - origin[1])
-    print(delta_y)
-    if (delta_x >= 0 and delta_y >= 0):
-        # top right
-        return 0 if delta_y == 0 else math.degrees(math.atan(delta_x/delta_y))
+    delta_y = float(-(target[1] - origin[1]))
+    print('dx {} dy {}'.format(delta_x, delta_y))
+    if (delta_x >= 0 and delta_y > 0):
+        print('top right')
+        return 0 if delta_x == 0 else math.degrees(math.atan(delta_y/delta_x))
     if (delta_x >= 0 and delta_y <= 0):
+        print('bottom right')
         # bottom right
-        return 90 if delta_x == 0 else 90 + (-1) * math.degrees(math.atan(delta_y/delta_x))
+        return 90 if delta_y == 0 else 90 + (-1) * math.degrees(math.atan(delta_x/delta_y))
     if (delta_x <= 0 and delta_y <= 0):
+        print('bottom left')
         # bottom left
-        return 180 if delta_y == 0 else 180 + (-1) * math.degrees(math.atan(delta_x/delta_y))
+        return 180 if delta_y == 0 else 180 + math.degrees(math.atan(delta_x/delta_y))
 
-
-    return None
+    print('top left')
+    return 270 if delta_x == 0 else 270 + (-1) * math.degrees(math.atan(delta_y/delta_x))
 
 ## Problem 2
 asteroids = get_asteroids(get_board('./test5.txt'))
-print(asteroids)
+#print(asteroids)
 # Starting at (8,3) get the angle between the vertical line and the line that connects the origin to the target
-print(angle((2,3), (3,0)))
-print(angle((2,3), (4,6)))
-print(angle((2,3), (4,0`)))
+origin = (4,3)
+print(angle(origin, (4,0)))
+print(angle(origin, (5,1)))
+print(angle(origin, (8,3)))
+print(angle(origin, (8,4)))
+print(angle(origin, (4,6)))
+print(angle(origin, (3,5)))
+print(angle(origin, (3,3)))
+print(angle(origin, (3,2)))
