@@ -68,37 +68,76 @@ print(get_max_number_visible_asteroids(get_asteroids(get_board('./input.txt'))))
 
 def angle(origin, target):
     # Angle for right triangle is tan^-1(opposite/adjacent)
-    # The opposite and adjecent values depend on what quadrant the target is
-    # in relative to the origin
     delta_x = float(target[0] - origin[0])
     # increasing y moves a point DOWNWARDS
     delta_y = float(-(target[1] - origin[1]))
-    print('dx {} dy {}'.format(delta_x, delta_y))
+    #print('dx {} dy {}'.format(delta_x, delta_y))
     if (delta_x >= 0 and delta_y > 0):
-        print('top right')
-        return 0 if delta_x == 0 else math.degrees(math.atan(delta_y/delta_x))
+        #print('top right')
+        return 0 if delta_x == 0 else math.degrees(math.atan(delta_x/delta_y))
     if (delta_x >= 0 and delta_y <= 0):
-        print('bottom right')
-        # bottom right
-        return 90 if delta_y == 0 else 90 + (-1) * math.degrees(math.atan(delta_x/delta_y))
+        #print('bottom right')
+        # angle is -ve
+        return 90 if delta_y == 0 else 180 +  math.degrees(math.atan(delta_x/delta_y))
     if (delta_x <= 0 and delta_y <= 0):
-        print('bottom left')
-        # bottom left
-        return 180 if delta_y == 0 else 180 + math.degrees(math.atan(delta_x/delta_y))
+        #print('bottom left')
+        return 270 if delta_y == 0 else 180 + math.degrees(math.atan(delta_x/delta_y))
+    #print('top left')
+    # angle is -ve
+    return 270 if delta_x == 0 else 360 +  math.degrees(math.atan(delta_x/delta_y))
 
-    print('top left')
-    return 270 if delta_x == 0 else 270 + (-1) * math.degrees(math.atan(delta_y/delta_x))
+def vaporize(origin, asteroids):
+    targets = asteroids.copy()
+    targets.remove(origin)
+    # Order the list of asteroids by the angle they make with the origin
+    ordered_asteroids = sorted(targets, key = lambda t:(angle(origin,t)))
+    # For each asteroid, get the angle of the origin to the target
+    angles_targets = list(map(lambda a: (angle(origin,a),a), ordered_asteroids))
+    # Group the asteroids by angle
+    # Asteroids at the same angle cannot be vaporized with the same shot
+    asteroids_by_angle = {}
+    for a, target in angles_targets:
+        if a in asteroids_by_angle:
+            asteroids_by_angle[a].append(target)
+        else:
+            asteroids_by_angle[a] = [target]
+
+    for a in asteroids_by_angle:
+        print('{} {}'.format(a, asteroids_by_angle[a]))
+
+    while len(asteroids_by_angle) > 0 :
+        for a in asteroids_by_angle:
+            print(asteroids_by_angle[a].pop(0))
+            if len(asteroids_by_angle[a]) == 0:
+                del asteroids_by_angle[a]
+    
+
+    #print(asteroids_by_angle)
+
+    #sorted_targets = sorted(targets, key = lambda t:(angle(origin,t)))
+    #print(list(map(lambda t: (angle(origin,t),t), sorted_targets)))
+    #j = sorted(targets, key = lambda t:(angle(origin,t)))
+    #print(targets)
+    #print(j)
 
 ## Problem 2
 asteroids = get_asteroids(get_board('./test5.txt'))
+print(asteroids)
+vaporize((8,3),asteroids)
 #print(asteroids)
 # Starting at (8,3) get the angle between the vertical line and the line that connects the origin to the target
-origin = (4,3)
-print(angle(origin, (4,0)))
-print(angle(origin, (5,1)))
-print(angle(origin, (8,3)))
-print(angle(origin, (8,4)))
-print(angle(origin, (4,6)))
+'''
+origin = (3,3)
+print(angle(origin, (3,0)))
+print(angle(origin, (4,1)))
+print(angle(origin, (5,2)))
+print(angle(origin, (6,3)))
+print(angle(origin, (5,4)))
+print(angle(origin, (4,8)))
 print(angle(origin, (3,5)))
-print(angle(origin, (3,3)))
-print(angle(origin, (3,2)))
+print(angle(origin, (2,5)))
+print(angle(origin, (1,4)))
+print(angle(origin, (1,3)))
+print(angle(origin, (1,2)))
+print(angle(origin, (2,1)))
+'''
