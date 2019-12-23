@@ -68,8 +68,8 @@ print(get_max_number_visible_asteroids(get_asteroids(get_board('./test2.txt'))))
 print(get_max_number_visible_asteroids(get_asteroids(get_board('./test3.txt'))))
 print(get_max_number_visible_asteroids(get_asteroids(get_board('./test4.txt'))))
 '''
-print(get_max_number_visible_asteroids(get_asteroids(get_board('./test6.txt'))))
-print(get_max_number_visible_asteroids(get_asteroids(get_board('./input.txt'))))
+print('problem 1 test {}'.format(get_max_number_visible_asteroids(get_asteroids(get_board('./test6.txt')))))
+print('problem 1 {}'.format(get_max_number_visible_asteroids(get_asteroids(get_board('./input.txt')))))
 
 
 def angle(origin, target):
@@ -121,20 +121,18 @@ def vaporize(origin, asteroids):
 
     return vaporized
 
+def problem2(best_asteriod, asteroids):
+    a200 = vaporize(best_asteriod, asteroids)[199]
+    return (a200[0] * 100 + a200[1])
 
 ## Problem 2
 # Get 200th asteroid
-a200 = vaporize((11,13),get_asteroids(get_board('./test6.txt')))[199]
-print(a200)
-print(a200[0] * 100 + a200[1])
+print('problem 2 test {}'.format(problem2((11,13),get_asteroids(get_board('./test6.txt')))))
+print('problem 2 {}'.format(problem2((22,25),get_asteroids(get_board('./input.txt')))))
 
-a200 = vaporize((22,25),get_asteroids(get_board('./input.txt')))[199]
-print(a200)
-print(a200[0] * 100 + a200[1])
 
-#print(asteroids)
-# Starting at (8,3) get the angle between the vertical line and the line that connects the origin to the target
 '''
+tests for angle
 origin = (3,3)
 print(angle(origin, (3,0)))
 print(angle(origin, (4,1)))
