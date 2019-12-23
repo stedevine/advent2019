@@ -45,6 +45,8 @@ def get_board(filename):
 # Get the line of site
 # If line of site is all . - can see asteroid, otherwise blocked
 def get_max_number_visible_asteroids(asteroids):
+    # part 2 of the puzzle requires the asteriod
+    best_asteriod = None
     max_count = 0
     for i in range(0, len(asteroids)):
         source = asteroids[i]
@@ -55,16 +57,20 @@ def get_max_number_visible_asteroids(asteroids):
             line_of_sight = get_line_of_sight(source, target)
             if not (set(line_of_sight[1:-1]) & set(asteroids)):
                 count = count + 1
-        max_count = max(count,max_count)
-    return max_count
+        if (count > max_count):
+            max_count = count
+            best_asteriod = source
+    return (max_count,best_asteriod)
 
 '''
 print(get_max_number_visible_asteroids(get_asteroids(get_board('./test1.txt'))))
 print(get_max_number_visible_asteroids(get_asteroids(get_board('./test2.txt'))))
 print(get_max_number_visible_asteroids(get_asteroids(get_board('./test3.txt'))))
 print(get_max_number_visible_asteroids(get_asteroids(get_board('./test4.txt'))))
-print(get_max_number_visible_asteroids(get_asteroids(get_board('./input.txt'))))
 '''
+print(get_max_number_visible_asteroids(get_asteroids(get_board('./test6.txt'))))
+print(get_max_number_visible_asteroids(get_asteroids(get_board('./input.txt'))))
+
 
 def angle(origin, target):
     # Angle for right triangle is tan^-1(opposite/adjacent)
@@ -102,28 +108,30 @@ def vaporize(origin, asteroids):
         else:
             asteroids_by_angle[a] = [target]
 
-    for a in asteroids_by_angle:
-        print('{} {}'.format(a, asteroids_by_angle[a]))
+    # Iterate through the dictionary, pop out each value in the list
+    count = 0
+    vaporized = []
+    while count < len(targets):
+        for key in asteroids_by_angle:
+            if (len(asteroids_by_angle[key])):
+                a = asteroids_by_angle[key].pop(0)
+                vaporized.append(a)
+                count = count + 1
+                #print('{} {}'.format(count, a))
 
-    while len(asteroids_by_angle) > 0 :
-        for a in asteroids_by_angle:
-            print(asteroids_by_angle[a].pop(0))
-            if len(asteroids_by_angle[a]) == 0:
-                del asteroids_by_angle[a]
-    
+    return vaporized
 
-    #print(asteroids_by_angle)
-
-    #sorted_targets = sorted(targets, key = lambda t:(angle(origin,t)))
-    #print(list(map(lambda t: (angle(origin,t),t), sorted_targets)))
-    #j = sorted(targets, key = lambda t:(angle(origin,t)))
-    #print(targets)
-    #print(j)
 
 ## Problem 2
-asteroids = get_asteroids(get_board('./test5.txt'))
-print(asteroids)
-vaporize((8,3),asteroids)
+# Get 200th asteroid
+a200 = vaporize((11,13),get_asteroids(get_board('./test6.txt')))[199]
+print(a200)
+print(a200[0] * 100 + a200[1])
+
+a200 = vaporize((22,25),get_asteroids(get_board('./input.txt')))[199]
+print(a200)
+print(a200[0] * 100 + a200[1])
+
 #print(asteroids)
 # Starting at (8,3) get the angle between the vertical line and the line that connects the origin to the target
 '''
