@@ -45,20 +45,38 @@ def get_energy(moons):
 
     return total
 
-'''
-<x=-13, y=-13, z=-13>
-<x=5, y=-8, z=3>
-<x=-6, y=-10, z=-3>
-<x=0, y=5, z=-5>
-'''
+def problem1():
+    moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
+    for i in range(0,1000):
+        for pair in combinations(moons,2):
+            update_moon_velocities(pair[0],pair[1])
+        do_step(moons)
+    print(get_energy(moons))
 
-moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
-for i in range (0,1000):
+problem1()
+
+
+def slight_return(original_moons, moons):
+    for i in range(0, len(moons)):
+        if (moons[i].x != original_moons[i].x or \
+            moons[i].y != original_moons[i].y or \
+            moons[i].z != original_moons[i].z):
+                return False
+    return True
+'''
+moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
+original_moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
+i = 0
+while(True):
+    i = i + 1
     for pair in combinations(moons,2):
         update_moon_velocities(pair[0],pair[1])
     do_step(moons)
+    if (slight_return(original_moons,moons)):
+        print(i)
+        break
 
 for moon in moons:
     print(vars(moon))
 
-print(get_energy(moons))
+'''
