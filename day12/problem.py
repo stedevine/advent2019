@@ -44,13 +44,14 @@ def get_energy(moons):
     return total
 
 def problem1():
-    #moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
-    moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
-    for i in range(0,2772):
+    moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
+    #moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
+    for i in range(0,1000):
         for pair in combinations(moons,2):
             update_moon_velocities(pair[0],pair[1])
         do_step(moons)
-        print(get_energy(moons))
+
+    print(get_energy(moons))
 
 problem1()
 
