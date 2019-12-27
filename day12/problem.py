@@ -8,7 +8,6 @@ class Moon:
         self.vy = 0
         self.vz = 0
 
-
 def update_moon_velocities(m1, m2):
     dvx1, dvx2 = get_velocity_delta(m1.x, m2.x)
     m1.vx = m1.vx + dvx1
@@ -21,7 +20,6 @@ def update_moon_velocities(m1, m2):
     dvz1, dvz2 = get_velocity_delta(m1.z, m2.z)
     m1.vz = m1.vz + dvz1
     m2.vz = m2.vz + dvz2
-
 
 def get_velocity_delta(pos1, pos2):
         if (pos1 == pos2):
@@ -46,23 +44,68 @@ def get_energy(moons):
     return total
 
 def problem1():
-    moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
-    for i in range(0,1000):
+    #moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
+    moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
+    for i in range(0,2772):
         for pair in combinations(moons,2):
             update_moon_velocities(pair[0],pair[1])
         do_step(moons)
-    print(get_energy(moons))
+        print(get_energy(moons))
 
 problem1()
-
 
 def slight_return(original_moons, moons):
     for i in range(0, len(moons)):
         if (moons[i].x != original_moons[i].x or \
             moons[i].y != original_moons[i].y or \
-            moons[i].z != original_moons[i].z):
+            moons[i].z != original_moons[i].z or \
+            moons[i].vx != original_moons[i].vx or \
+            moons[i].vy != original_moons[i].vy or \
+            moons[i].vz != original_moons[i].vz):
                 return False
     return True
+
+def check_moonal_pair(moon1,moon2):
+    return (moon1.x == moon2.x and \
+            moon1.y == moon2.y and \
+            moon1.z == moon2.z and \
+            moon1.vx == moon2.vx and \
+            moon1.vy == moon2.vy and \
+            moon1.vz == moon2.vz)
+
+def problem2():
+    #moons = [ Moon(-8,-10,0), Moon(5,5,10), Moon(2,-7,3), Moon(9,-8,-3)]
+    #original_moons = [ Moon(-8,-10,0), Moon(5,5,10), Moon(2,-7,3), Moon(9,-8,-3)]
+    #moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
+    #original_moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
+
+    #moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
+    #original_moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
+
+
+    moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
+    original_moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
+
+    i = 0
+    while(True):
+        i = i + 1
+        for pair in combinations(moons,2):
+            update_moon_velocities(pair[0],pair[1])
+        do_step(moons)
+
+        for j in range(0,len(moons)):
+            if check_moonal_pair(moons[j],original_moons[j]):
+                print('moonal match at {}'.format(i))
+
+        if (slight_return(original_moons,moons)):
+            print('total match at {}'.format(i))
+            break
+
+    for moon in moons:
+        print(vars(moon))
+
+#problem2()
+# Get the period of each orbit?
 '''
 moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
 original_moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
