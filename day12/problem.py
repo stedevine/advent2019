@@ -1,4 +1,5 @@
 from itertools import combinations
+import math
 class Moon:
     def __init__(self, x, y, z):
         self.x = x
@@ -55,72 +56,93 @@ def problem1():
 
 problem1()
 
-def slight_return(original_moons, moons):
+
+def check_moonal_x(moons,original_moons):
     for i in range(0, len(moons)):
         if (moons[i].x != original_moons[i].x or \
-            moons[i].y != original_moons[i].y or \
-            moons[i].z != original_moons[i].z or \
-            moons[i].vx != original_moons[i].vx or \
-            moons[i].vy != original_moons[i].vy or \
-            moons[i].vz != original_moons[i].vz):
-                return False
+            moons[i].vx != original_moons[i].vx):
+            return False
     return True
 
-def check_moonal_pair(moon1,moon2):
-    return (moon1.x == moon2.x and \
-            moon1.y == moon2.y and \
-            moon1.z == moon2.z and \
-            moon1.vx == moon2.vx and \
-            moon1.vy == moon2.vy and \
-            moon1.vz == moon2.vz)
+def check_moonal_y(moons,original_moons):
+    for i in range(0, len(moons)):
+        if (moons[i].y != original_moons[i].y or \
+            moons[i].vy != original_moons[i].vy):
+            return False
+    return True
+
+def check_moonal_z(moons,original_moons):
+    for i in range(0, len(moons)):
+        if (moons[i].z != original_moons[i].z or \
+            moons[i].vz!= original_moons[i].vz):
+            return False
+    return True
+
+def get_lowest_common_multiple(x,y,z):
+    xs = set()
+    ys = set()
+    zs = set()
+    multiplier = 0
+    common = set()
+    while (len(common) == 0):
+        multiplier = multiplier + 1
+        if (multiplier % 1000 == 0):
+            print(multiplier)
+        xs.add(multiplier * x)
+        ys.add(multiplier * y)
+        zs.add(multiplier * z)
+        #print('{} {}'.format(multiplier, xs))
+        common = xs.intersection(ys).intersection(zs)
+
+    return common.pop()
+
+def get_lcm(x,y):
+    return int(x * y / math.gcd(x,y))
 
 def problem2():
-    #moons = [ Moon(-8,-10,0), Moon(5,5,10), Moon(2,-7,3), Moon(9,-8,-3)]
+
+    # Test 1
+    #moons =          [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
+    #original_moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
+
+    # Test 2
+    #moons =          [ Moon(-8,-10,0), Moon(5,5,10), Moon(2,-7,3), Moon(9,-8,-3)]
     #original_moons = [ Moon(-8,-10,0), Moon(5,5,10), Moon(2,-7,3), Moon(9,-8,-3)]
-    #moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
-    #original_moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
 
-    #moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
-    #original_moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
+    # Puzzle input
+    moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
+    original_moons = [ Moon(-13,-13,-13), Moon(5,-8,3), Moon(-6,-10,-3), Moon(0,5,-5)]
 
-
-    moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
-    original_moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
-
-    i = 0
-    while(True):
-        i = i + 1
+    # Get each orbital plane period for all moons
+    x_period = 0
+    y_period = 0
+    z_period = 0
+    steps = 0
+    while (x_period == 0 or y_period == 0 or z_period == 0):
         for pair in combinations(moons,2):
             update_moon_velocities(pair[0],pair[1])
         do_step(moons)
+        steps = steps + 1
+        all_x = check_moonal_x(original_moons,moons)
+        all_y = check_moonal_y(original_moons,moons)
+        all_z = check_moonal_z(original_moons,moons)
 
-        for j in range(0,len(moons)):
-            if check_moonal_pair(moons[j],original_moons[j]):
-                print('moonal match at {}'.format(i))
+        if (all_x and x_period == 0):
+            x_period = steps
+            print('moonal X match at {}'.format(x_period))
+        if (all_y and y_period == 0):
+            y_period = steps
+            print('moonal Y match at {}'.format(y_period))
+        if (all_z and z_period == 0):
+            z_period = steps
+            print('moonal Z match at {}'.format(z_period))
 
-        if (slight_return(original_moons,moons)):
-            print('total match at {}'.format(i))
-            break
+    print('x {}'.format(x_period))
+    print('y {}'.format(y_period))
+    print('z {}'.format(z_period))
 
-    for moon in moons:
-        print(vars(moon))
+    # The lowest common multiple of these periods is the number of steps required
+    # for the entire system to return to the initial state.
+    print(get_lcm(get_lcm(x_period,y_period),z_period))
 
-#problem2()
-# Get the period of each orbit?
-'''
-moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
-original_moons = [ Moon(-1,0,2), Moon(2,-10,-7), Moon(4,-8,8), Moon(3,5,-1)]
-i = 0
-while(True):
-    i = i + 1
-    for pair in combinations(moons,2):
-        update_moon_velocities(pair[0],pair[1])
-    do_step(moons)
-    if (slight_return(original_moons,moons)):
-        print(i)
-        break
-
-for moon in moons:
-    print(vars(moon))
-
-'''
+problem2()
