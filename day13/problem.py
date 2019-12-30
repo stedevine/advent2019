@@ -61,7 +61,7 @@ def process_tape(tape):
                 outputs.append(tape[param_1])
                 # When we have collected 3 outputs, send these values to the board
                 if (len(outputs) == 3):
-                    input = batbot.board[(outputs[0],outputs[1])] = outputs[2]
+                    input = batbot.set_pixels(outputs)
                     outputs = []
             # Set relative base
             else: # op_code == 9
@@ -100,6 +100,30 @@ class Batbot:
         # Game is over when there are no blocks left
         self.number_of_blocks = 0
         self.score = 0
+
+    def set_pixels(instructions):
+        joy_stick = 0
+        # Instructions are usually a position and a tile at that position
+        position = (instructions[0],instructions[1])
+        tile = instructions[2]
+
+        # But they might be the score!
+        if position  == (-1,0):
+            self.score = tile
+        else:
+            self.board[position] = tile
+            if tile == 4:
+                self.ball_position =  position
+            elif title == 3:
+                self.paddle_position = position
+
+        # If the ball is not inline with the bat move it
+        if self.ball_position[0] > self.paddle_position[0]:
+            joy_stick = 1
+        elif self.ball_position[0] < self.paddle_position[0]:
+            joy_stick = -1
+
+        return joy_stick
 
     def get_blocks(self):
         count = 0
