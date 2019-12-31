@@ -19,7 +19,7 @@ def get_param_modes(instruction):
 
 def process_tape(tape):
     batbot = Batbot()
-    outputs = []                # For each input the program will produce 2 outputs for the robot
+    outputs = []                # For each input the program will produce 3 outputs for the robot
     tape_position = 0
     relative_base = 0
     input = 0
@@ -59,7 +59,7 @@ def process_tape(tape):
             # Output
             elif op_code == 4:
                 outputs.append(tape[param_1])
-                # When we have collected 3 outputs, send these values to the board
+                # When we have collected 3 outputs, send these values to the robot
                 if (len(outputs) == 3):
                     input = batbot.set_pixels(outputs)
                     outputs = []
@@ -79,10 +79,7 @@ def process_tape(tape):
                 tape_position = param_2 if param_1 == 0 else tape_position + 3
 
         elif op_code == 99:
-            print('over')
-            #print(batbot)
-            #print(batbot.get_blocks)
-            #print(batbot.get_blocks())
+            print('Game Over')
             return batbot
 
     return None
@@ -101,20 +98,20 @@ class Batbot:
         self.number_of_blocks = 0
         self.score = 0
 
-    def set_pixels(instructions):
+    def set_pixels(self, instructions):
         joy_stick = 0
         # Instructions are usually a position and a tile at that position
         position = (instructions[0],instructions[1])
         tile = instructions[2]
 
-        # But they might be the score!
+        # But the instructions might be the score!
         if position  == (-1,0):
             self.score = tile
         else:
             self.board[position] = tile
             if tile == 4:
                 self.ball_position =  position
-            elif title == 3:
+            elif tile == 3:
                 self.paddle_position = position
 
         # If the ball is not inline with the bat move it
@@ -130,14 +127,14 @@ class Batbot:
         for k in self.board:
             if self.board[k] == 2: # block tile
                 count = count + 1
-        print(count)
 
         return count
 
 ### Part 1 -  Count the number of block tiles
 bot = process_tape(tape.copy())
 print(bot.get_blocks())
-#print(bot.number_of_blocks())
 
 # Part 2
 tape[0] = 2 # Free play
+bot = process_tape(tape.copy())
+print(bot.score)
