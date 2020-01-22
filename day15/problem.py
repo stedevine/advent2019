@@ -65,11 +65,12 @@ def process_tape(tape):
                 input = repair_bot.get_next_move(output)
                 #sys.stdin.readline()
                 if (out_count % 5000) == 0:
-                    repair_bot.display_hull()
+                    print('output count {}'.format(out_count))
+                    repair_bot.display_maze()
                 #print('output {} input {}'.format(output,input))
                 if output == 2:
                     print('Found the O2 pump')
-                    repair_bot.display_hull()
+                    repair_bot.display_maze()
                     return repair_bot
             # Set relative base
             else: # op_code == 9
@@ -126,7 +127,7 @@ class RepairBot:
         # East
         return (position[0] + 1, position[1])
 
-    def display_hull(self):
+    def display_maze(self):
         max_x, max_y = -sys.maxsize - 1, -sys.maxsize - 1
         min_x, min_y = sys.maxsize, sys.maxsize
         for key in self.board:
@@ -144,6 +145,65 @@ class RepairBot:
             print(line)
         print()
 
+    def get_range(self):
+        max_x, max_y = -sys.maxsize - 1, -sys.maxsize - 1
+        min_x, min_y = sys.maxsize, sys.maxsize
+        for key in self.board:
+            max_x = max(max_x, key[0])
+            min_x = min(min_x, key[0])
+            max_y = max(max_y, key[1])
+            min_y = min(min_y, key[1])
+
+        return max_x, min_x, max_y, min_y
+
+    def get_start_position(self):
+        max_x, min_x, max_y, min_y = self.get_range()
+        for y in range(max_y, min_y -1, -1):
+            for x in range(min_x, max_x + 1):
+                if self.board.get((x, y), None) == 'S':
+                    return(x, y)
+
+    def find_path(self, position, min_path_length):
+        if self.board.get((position[0], position[1]), None) == 'X':
+            print('path length {}'.format(self.get_path_length()))
+            self.display_maze()
+            min_path_length = min(min_path_length, self.get_path_length())
+            return min_path_length
+
+        self.board[(position[0],position[1])] = 'V'
+        # South
+        if (self.is_valid((position[0] - 1, position[1]))):
+            min_path_length = self.find_path((position[0] - 1, position[1]), min_path_length)
+
+        # East
+        if (self.is_valid((position[0], position[1] + 1))):
+            min_path_length = self.find_path((position[0], position[1] + 1), min_path_length)
+
+        # North
+        if (self.is_valid((position[0] + 1, position[1]))):
+            min_path_length = self.find_path((position[0] + 1, position[1]), min_path_length)
+
+        # West
+        if (self.is_valid((position[0], position[1] - 1))):
+            min_path_length = self.find_path((position[0], position[1] - 1), min_path_length)
+
+        # Unvisit the position
+        self.board[(position[0],position[1])] = '.'
+        return min_path_length
+
+    def get_path_length(self):
+        path_length = 0
+        for k in self.board:
+            if self.board[k] == 'V':
+                path_length = path_length + 1
+        return path_length
+
+    def is_valid(self, position):
+        tile = self.board.get((position[0], position[1]),None)
+        if (tile != None and tile != '#' and tile != 'V'):
+            return True
+
+        return False
 
 
 
@@ -151,3 +211,5 @@ tape = [3,1033,1008,1033,1,1032,1005,1032,31,1008,1033,2,1032,1005,1032,58,1008,
 tape = tape + [0] * 1000
 
 r = process_tape(tape)
+r.display_maze()
+print('shortest {}'.format(r.find_path(r.get_start_position(), sys.maxsize)))
