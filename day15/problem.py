@@ -109,6 +109,7 @@ class RepairBot:
         else: # result = 2
             self.board[self.get_new_position(self.position, self.move_direction)] = 'X'
 
+        # Move in a random direction (there's probably a quicker way to do this.)
         directions = [1,2,3,4]
         directions.remove(self.move_direction)
         self.move_direction = random.sample(directions,1)[0]
@@ -143,50 +144,6 @@ class RepairBot:
             print(line)
         print()
 
-    def solve_maze(self):
-        # For a point, get the unvisited neighbours
-        points = []
-        points.insert(0,(0,0))
-        while(True):
-            point = points.pop()
-            print('exploring {}'.format(point))
-            if self.board[point] == 'X':
-                print("Found X")
-                print(points)
-                break
-            neighbors = self.get_neighbors(point)
-            print('found {}'.format(neighbors))
-            if len(neighbors) == 0:
-                self.board[point] = 'V'
-            else:
-                for p in neighbors:
-                    points.insert(0, p)
-
-
-        '''
-        points = []
-        points.insert(0, (0,0))
-        while(True):
-            print(points[0])
-            if self.board[points[0]] == 'X':
-                print('Found O2')
-                print(points)
-                break
-            else:
-        '''
-
-    def get_neighbors(self, position):
-        neighbors = []
-        if self.board.get((position[0] + 1, position[1]),None) == '.':
-            neighbors.append((position[0] + 1, position[1]))
-        if self.board.get((position[0] - 1, position[1]),None) == '.':
-            neighbors.append((position[0] - 1, position[1]))
-        if self.board.get((position[0], position[1] + 1),None) == '.':
-            neighbors.append((position[0], position[1] + 1))
-        if self.board.get((position[0], position[1] - 1),None) == '.':
-            neighbors.append((position[0], position[1] -1))
-
-        return neighbors
 
 
 
@@ -194,5 +151,3 @@ tape = [3,1033,1008,1033,1,1032,1005,1032,31,1008,1033,2,1032,1005,1032,58,1008,
 tape = tape + [0] * 1000
 
 r = process_tape(tape)
-print(r.get_neighbors((0,0)))
-#r.solve_maze()

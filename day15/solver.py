@@ -21,6 +21,13 @@ def display_board(board):
         print(line)
     print()
 
+def get_path_length(board):
+    path_length = 0
+    for k in board:
+        if board[k] == 'V':
+            path_length = path_length + 1
+    return path_length
+
 def get_range(board):
     max_x, max_y = -sys.maxsize - 1, -sys.maxsize - 1
     min_x, min_y = sys.maxsize, sys.maxsize
@@ -36,7 +43,7 @@ def get_start_position(board):
     max_x, min_x, max_y, min_y = get_range(board)
     for y in range(max_y,min_y -1 , -1):
         for x in range(min_x, max_x + 1):
-            if board[(x,y)] == 'S':
+            if board.get((x,y),None) == 'S':
                 return (x,y)
 
 def get_neighbors(position):
@@ -52,25 +59,42 @@ def get_neighbors(position):
 
     return neighbors
 
-def solve_maze(board):
-    start_position = get_start_position(board)
-    points = []
-    points.insert(0,start_position)
-    for i in range(0,100):
-        p = points.pop()
-        neighbors = get_neighbors(p)
-        print(neighbors)
-        if len(neighbors) == 0:
-            board[points[0]] = 'V'
-        else:
-            points.insert(0,neighbors[0])
+def is_valid(position, board):
+    tile = board.get((position[0], position[1]),None)
+    if (tile != None and tile != '#' and tile != 'V'):
+        return True
 
+    return False
 
+def find_path(position, board, min_path_length):
+    if board.get((position[0],position[1]), None) == 'X':
+        print(get_path_length(board))
+        display_board(board)
+        min_path_length = min(min_path_length, get_path_length(board))
+        return min_path_length
 
+    board[(position[0],position[1])] = 'V'
+    # South
+    if (is_valid((position[0] - 1, position[1]), board)):
+        min_path_length = find_path((position[0] - 1, position[1]), board, min_path_length)
 
+    # East
+    if (is_valid((position[0], position[1] + 1), board)):
+        min_path_length = find_path((position[0], position[1] + 1), board, min_path_length)
 
+    # North
+    if (is_valid((position[0] + 1, position[1]), board)):
+        min_path_length = find_path((position[0] + 1, position[1]), board, min_path_length)
 
-board = load_maze('./simple_maze.txt')
+    # West
+    if (is_valid((position[0], position[1] - 1), board)):
+        min_path_length = find_path((position[0], position[1] - 1), board, min_path_length)
+
+    # Unvisit the position
+    board[(position[0],position[1])] = '.'
+    return min_path_length
+
+board = load_maze('./maze.txt')
 display_board(board)
-solve_maze(board)
+print('shortest {}'.format(find_path(get_start_position(board), board, sys.maxsize)))
 display_board(board)
