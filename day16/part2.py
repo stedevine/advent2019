@@ -1,5 +1,5 @@
 import math
-
+import sys
 def get_pattern_digit(pattern_offset, output_digit):
     # base pattern = 0,1,0,-1
     sector_length = (output_digit + 1)
@@ -20,10 +20,16 @@ def get_pattern_digit(pattern_offset, output_digit):
 def get_next_phase(phase):
     next_phase = []
     for output_digit in range(0, len(phase)):
+        print("output_digit {}".format(output_digit))
         sum = 0
         for phase_offset in range(0, len(phase)):
+            #if (phase_offset % 10000 == 0):
+            #    print("{} of {}".format(phase_offset,len(phase)))
+            #sys.stdout.write("\r Position {}".format(phase_offset))
+            #print("\r Position {}".format(phase_offset))
             sum += phase[phase_offset] * get_pattern_digit(phase_offset + 1, output_digit)
         next_phase.append(abs(sum) % 10)
+        #sys.stdout.flush()
         sum = 0
     return next_phase
 
@@ -33,6 +39,24 @@ def get_first_eight_after_100_phases(phase):
         phase = get_next_phase(phase)
 
     return ''.join(str(d) for d in phase[:8])
+
+def get_message_offset(phase):
+    message_offset_digits = [int(d) for d in phase[:7]]
+    message_offset = 0
+    mul = 1
+    for d in range(len(message_offset_digits)-1,-1,-1):
+        message_offset += message_offset_digits[d] * mul
+        mul *= 10
+    return message_offset
+
+def get_message(phase):
+    print('message offset : {}'.format(get_message_offset(phase)))
+    phase = [int(d) for d in phase] * 10000
+    phase = get_next_phase(phase)
+    #for phase_number in range(0,100):
+    #    print("phase_number {}".format(phase_number))
+    #    phase = get_next_phase(phase)
+
 
 def simple_tests():
     print("simple tests:")
@@ -48,5 +72,11 @@ def complex_tests():
     print(get_first_eight_after_100_phases("19617804207202209144916044189917"))
     print(get_first_eight_after_100_phases("69317163492948606335995924319873"))
 
-problem_input = '59713137269801099632654181286233935219811755500455380934770765569131734596763695509279561685788856471420060118738307712184666979727705799202164390635688439701763288535574113283975613430058332890215685102656193056939765590473237031584326028162831872694742473094498692690926378560215065112055277042957192884484736885085776095601258138827407479864966595805684283736114104361200511149403415264005242802552220930514486188661282691447267079869746222193563352374541269431531666903127492467446100184447658357579189070698707540721959527692466414290626633017164810627099243281653139996025661993610763947987942741831185002756364249992028050315704531567916821944'
-print(get_first_eight_after_100_phases(problem_input))
+def part_1():
+    problem_input = '59713137269801099632654181286233935219811755500455380934770765569131734596763695509279561685788856471420060118738307712184666979727705799202164390635688439701763288535574113283975613430058332890215685102656193056939765590473237031584326028162831872694742473094498692690926378560215065112055277042957192884484736885085776095601258138827407479864966595805684283736114104361200511149403415264005242802552220930514486188661282691447267079869746222193563352374541269431531666903127492467446100184447658357579189070698707540721959527692466414290626633017164810627099243281653139996025661993610763947987942741831185002756364249992028050315704531567916821944'
+    print(get_first_eight_after_100_phases(problem_input))
+
+def part_2_tests():
+    get_message("03036732577212944063491565474664")
+
+part_2_tests()
